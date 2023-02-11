@@ -1,7 +1,7 @@
-import styles from './styles'
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { 
+  StyleSheet, 
   Text, View, 
   TouchableOpacity, 
   TouchableHighlight,
@@ -22,7 +22,7 @@ const CATEGORY_KEY = "@Category"
 export default function App() {
 
   const [working, setWorking] = useState(true);
-  const [editID, setEditID] = useState("");
+  const [isChecked, setChecked] = useState(false);
 
   // 마지막 카테고리 저장
   const saveLastCategory = async (working) => {
@@ -68,8 +68,6 @@ export default function App() {
   // 텍스트 value 설정
   const [text, setText] = useState("")
   const onChangeText = (payload) => {setText(payload)}
-
-
 
 
   // 스토리지에 할일 저장하기
@@ -138,20 +136,6 @@ const checkThis = async (key) => {
 }
 
 
-// 수정 text
-const [editText, setEditText] = useState("")
-const onChangeEditText = (payload) => {setEditText(payload)}
-
-const editToDos = async (key) => {
-  const editToDos = {...toDos};
-  editToDos[key].text = editText;
-  setToDos(editToDos);
-  setEditID("");
-  setEditText("");
-  await saveToDos(editToDos);
-}
-
-
 
 
   return (
@@ -192,43 +176,19 @@ const editToDos = async (key) => {
                   <View style={styles.leftBox}>
                     <Checkbox
                       style={styles.checkbox}
-                      value={toDos[key].checked}
-                      onValueChange={() => {checkThis(key)}}
+                      // value={toDos[key].checked}
+                      // onValueChange={checkThis(key)}
+                      // color={toDos[key].checked ? '#4630EB' : undefined}
+                      value={isChecked}
+                      onValueChange={setChecked}
                       color={toDos[key].checked ? '#4630EB' : undefined}
                     />
-                    {
-                      key == editID ? (
-                        <TextInput
-                          style={styles.editInput}
-                          placeholder={toDos[key].text}
-                          keyboardType="default"
-                          returnKeyType="done"
-                          onChangeText={onChangeEditText}
-                          value={editText}
-                          onSubmitEditing={()=>{editToDos(key)}}
-                        >
-                        </TextInput>
-                      ) : (
-                        toDos[key].checked ? (
-                          <Text style={{...styles.toDoText, color : "grey"}}>{toDos[key].text}</Text>
-                        ) : (
-                          <Text style={styles.toDoText}>{toDos[key].text}</Text>
-                        )
-                      )
-                    }
-                  </View>
-                  <View style={styles.rightBox}>
-                    <TouchableOpacity onPress={()=>{setEditID(key)}} style = {styles.icons}>
-                      <AntDesign name="edit" size={20} color="lightgrey" />
-                    </TouchableOpacity> 
-                    <TouchableOpacity 
-                      onPress={() => {deleteToDo(key)}}
-                      style = {styles.icons}
-                    >
-                      <AntDesign name="delete" size={20} color="lightgrey" />
-                    </TouchableOpacity> 
+                    <Text style={styles.toDoText}>{toDos[key].text}</Text>
                   </View>
                   
+                  <TouchableOpacity onPress={() => {deleteToDo(key)}}>
+                    <AntDesign name="delete" size={18} color="lightgrey" />
+                  </TouchableOpacity> 
                 </View>
               ) : null
             )
@@ -238,3 +198,53 @@ const editToDos = async (key) => {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.background,
+    paddingHorizontal : 20,
+  },
+  header:{
+    flexDirection : "row",
+    marginTop:100,
+    justifyContent : 'space-around'
+  },
+  btnText : {
+    fontSize : 40,
+    fontWeight: "600"
+  },
+  input : {
+    backgroundColor : 'white',
+    paddingVertical : 15,
+    paddingHorizontal : 20,
+    borderRadius : 30,
+    marginTop : 20,
+    marginBottom : 20,
+    fontSize : 15
+  },
+  toDo : {
+    backgroundColor : theme.toDoBG,
+    borderRadius : 15,
+    marginBottom : 10,
+    paddingHorizontal : 20,
+    paddingVertical : 20,
+    flexDirection : "row",
+    alignItems : "center",
+    justifyContent : "space-between",
+  },
+  toDoText : {
+    color : 'white',
+    fontSize : 15,
+    fontWeight : "500",
+    paddingHorizontal : "5%"
+  },
+  leftBox : {
+    flexDirection : "row",
+    alignItems : "center",
+    justifyContent : "flex-start",
+  },
+  checkbox: {
+    margin: 8,
+  },
+});
